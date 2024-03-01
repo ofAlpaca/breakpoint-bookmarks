@@ -36,8 +36,15 @@ export const loadBookmarks =
       const breakpoints = JSON.parse(flowData);
       vscode.debug.addBreakpoints(
         breakpoints.map(
-          (bp: vscode.Breakpoint) =>
-            new vscode.SourceBreakpoint(
+          (bp: vscode.Breakpoint) => ((bp as any).functionName?
+            new vscode.FunctionBreakpoint( // for function breakpoint
+              (bp as any).functionName,
+              bp.enabled,
+              bp.condition,
+              bp.hitCondition,
+              bp.logMessage
+            ):
+            new vscode.SourceBreakpoint( // for soruce/normal breakpoint
               new vscode.Location(
                 vscode.Uri.file(`${(bp as any).location}`),
                 new vscode.Range(
@@ -56,6 +63,7 @@ export const loadBookmarks =
               bp.hitCondition,
               bp.logMessage
             )
+          )
         )
       );
       vscode.window.showInformationMessage(
