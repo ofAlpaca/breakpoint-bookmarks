@@ -15,7 +15,13 @@ export const saveCurrentBreakpoints =
       placeHolder: "test express bug",
     });
     const currentBreakpoints = vscode.debug.breakpoints.map(
-      (bp: vscode.Breakpoint) => ({
+      (bp: vscode.Breakpoint) => ((bp as any).functionName?{ // function breakpoint
+        functionName: (bp as any).functionName,
+        enabled: bp.enabled,
+        condition: bp.condition,
+        hitCondition: bp.hitCondition,
+        logMessage: bp.logMessage,
+      }:{ // normal breakpoint
         location: (bp as any).location.uri.path,
         range: (bp as any).location.range,
         enabled: bp.enabled,
