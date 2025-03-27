@@ -14,6 +14,7 @@ export const saveCurrentBreakpoints =
     }
     const config = vscode.workspace.getConfiguration("breakpointBookmark");
     const saveLocation = config.get("saveLocation") as string;
+<<<<<<< HEAD
     const useRelativePaths = config.get("useRelativePaths") as boolean;
 
     const isDirExist = await provider.assureSaveDirectoryExist(
@@ -29,28 +30,40 @@ export const saveCurrentBreakpoints =
       })) ?? "";
 
     const currentBreakpoints = (
-      vscode.debug.breakpoints as vscode.SourceBreakpoint[]
-    ).map((bp: vscode.SourceBreakpoint) => {
-      let locationPath: string = bp.location.uri.path;
+      vscode.debug.breakpoints.map(
+        (bp: vscode.Breakpoint) => {
+          if ((bp as any).functionName) { // for function breakpoint
+            return {
+              functionName: (bp as any).functionName,
+              enabled: bp.enabled,
+              condition: bp.condition,
+              hitCondition: bp.hitCondition,
+              logMessage: bp.logMessage,
+            };
+          } else { // for normal breakpoint
+            let locationPath: string = bp.location.uri.path;
 
-      if (useRelativePaths) {
-        locationPath = path.relative(workspacePath, locationPath);
-      }
+            if (useRelativePaths) {
+              locationPath = path.relative(workspacePath, locationPath);
+            }
 
-      const range: vscode.Range = bp.location.range.with({
-        start: bp.location.range.start.translate(1),
-        end: bp.location.range.end.translate(1),
-      });
-
-      return {
-        location: locationPath,
-        range,
-        enabled: bp.enabled,
-        condition: bp.condition,
-        hitCondition: bp.hitCondition,
-        logMessage: bp.logMessage,
-      };
-    });
+            const range: vscode.Range = bp.location.range.with({
+              start: bp.location.range.start.translate(1),
+              end: bp.location.range.end.translate(1),
+            });
+  
+            return {
+              location: locationPath,
+              range,
+              enabled: bp.enabled,
+              condition: bp.condition,
+              hitCondition: bp.hitCondition,
+              logMessage: bp.logMessage,
+            };
+          }
+        }
+      )
+    );
 
     const filePath = saveLocation
       ? `${path.join(workspacePath, saveLocation, fileName)}.json`

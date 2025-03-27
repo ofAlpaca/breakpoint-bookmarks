@@ -60,29 +60,40 @@ export const loadBookmarks =
 
       vscode.debug.addBreakpoints(
         breakpoints.map((bp: BreakpointInfo) => {
-          const range = bp.range.map(({ line, character }) => ({
-            line: line - 1,
-            character,
-          }));
 
-          const vscodeRange = new vscode.Range(
-            new vscode.Position(range[0].line, range[0].character),
-            new vscode.Position(range[1].line, range[1].character)
-          );
+          if ((bp as any).functionName) {
+            new vscode.FunctionBreakpoint( // for function breakpoint
+              (bp as any).functionName,
+              bp.enabled,
+              bp.condition,
+              bp.hitCondition,
+              bp.logMessage
+            )
+          } else { // for normal breakpoint
+            const range = bp.range.map(({ line, character }) => ({
+              line: line - 1,
+              character,
+            }));
 
-          let locationPath = bp.location;
-          if (useRelativePaths) {
-            // converts stored relative path back to absolute
-            locationPath = path.resolve(workspacePath, bp.location);
+            const vscodeRange = new vscode.Range(
+              new vscode.Position(range[0].line, range[0].character),
+              new vscode.Position(range[1].line, range[1].character)
+            );
+
+            let locationPath = bp.location;
+            if (useRelativePaths) {
+              // converts stored relative path back to absolute
+              locationPath = path.resolve(workspacePath, bp.location);
+            }
+
+            return new vscode.SourceBreakpoint(
+              new vscode.Location(vscode.Uri.file(locationPath), vscodeRange),
+              bp.enabled,
+              bp.condition,
+              bp.hitCondition,
+              bp.logMessage
+            );
           }
-
-          return new vscode.SourceBreakpoint(
-            new vscode.Location(vscode.Uri.file(locationPath), vscodeRange),
-            bp.enabled,
-            bp.condition,
-            bp.hitCondition,
-            bp.logMessage
-          );
         })
       );
 
