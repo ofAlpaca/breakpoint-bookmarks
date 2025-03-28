@@ -7,8 +7,7 @@ class BookmarkFlow extends vscode.TreeItem {
   constructor(public readonly label: string) {
     super(label);
     this.contextValue = "flow-item";
-    this.iconPath = {
-      light: path.join(
+    this.iconPath = path.join(
         __filename,
         "..",
         "..",
@@ -16,17 +15,7 @@ class BookmarkFlow extends vscode.TreeItem {
         "resources",
         "light",
         "flow.svg"
-      ),
-      dark: path.join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "dark",
-        "flow.svg"
-      ),
-    };
+      );
   }
 }
 

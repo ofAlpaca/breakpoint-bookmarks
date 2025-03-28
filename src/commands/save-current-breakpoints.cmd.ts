@@ -14,7 +14,6 @@ export const saveCurrentBreakpoints =
     }
     const config = vscode.workspace.getConfiguration("breakpointBookmark");
     const saveLocation = config.get("saveLocation") as string;
-<<<<<<< HEAD
     const useRelativePaths = config.get("useRelativePaths") as boolean;
 
     const isDirExist = await provider.assureSaveDirectoryExist(
@@ -41,15 +40,15 @@ export const saveCurrentBreakpoints =
               logMessage: bp.logMessage,
             };
           } else { // for normal breakpoint
-            let locationPath: string = bp.location.uri.path;
+            let locationPath: string = (bp as any).location.uri.path;
 
             if (useRelativePaths) {
               locationPath = path.relative(workspacePath, locationPath);
             }
 
-            const range: vscode.Range = bp.location.range.with({
-              start: bp.location.range.start.translate(1),
-              end: bp.location.range.end.translate(1),
+            const range: vscode.Range = (bp as any).location.range.with({
+              start: (bp as any).location.range.start.translate(1),
+              end: (bp as any).location.range.end.translate(1),
             });
   
             return {

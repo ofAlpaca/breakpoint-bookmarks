@@ -62,13 +62,13 @@ export const loadBookmarks =
         breakpoints.map((bp: BreakpointInfo) => {
 
           if ((bp as any).functionName) {
-            new vscode.FunctionBreakpoint( // for function breakpoint
+            return new vscode.FunctionBreakpoint( // for function breakpoint
               (bp as any).functionName,
               bp.enabled,
               bp.condition,
               bp.hitCondition,
               bp.logMessage
-            )
+            );
           } else { // for normal breakpoint
             const range = bp.range.map(({ line, character }) => ({
               line: line - 1,
